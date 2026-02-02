@@ -10,13 +10,20 @@ const dbPath = path.join(__dirname, 'data/geothermal.db');
 let db = null;
 
 async function initDB() {
-  const SQL = await initSqlJs();
-  if (fs.existsSync(dbPath)) {
-    const buffer = fs.readFileSync(dbPath);
-    db = new SQL.Database(buffer);
-    console.log('Database loaded');
-  } else {
-    console.error('Database not found. Run: npm run import');
+  try {
+    const SQL = await initSqlJs();
+    if (fs.existsSync(dbPath)) {
+      const buffer = fs.readFileSync(dbPath);
+      db = new SQL.Database(buffer);
+      console.log('Database loaded successfully');
+    } else {
+      console.error('Database not found at:', dbPath);
+      // Create empty db for Railway
+      db = new SQL.Database();
+      console.log('Created empty database');
+    }
+  } catch (err) {
+    console.error('Failed to init database:', err);
   }
 }
 
