@@ -4,10 +4,15 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = parseInt(process.env.PORT) || 3000;
 const dbPath = path.join(__dirname, 'data/geothermal.db');
 
 let db = null;
+
+// Health check endpoint (must respond quickly)
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
 
 async function initDB() {
   try {
@@ -18,9 +23,6 @@ async function initDB() {
       console.log('Database loaded successfully');
     } else {
       console.error('Database not found at:', dbPath);
-      // Create empty db for Railway
-      db = new SQL.Database();
-      console.log('Created empty database');
     }
   } catch (err) {
     console.error('Failed to init database:', err);
@@ -208,8 +210,8 @@ app.get('/api/plant-countries', (req, res) => {
   }
 });
 
-initDB().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🌋 Geothermal Exhibitors DB running at http://0.0.0.0:${PORT}`);
-  });
+// Start server FIRST, then init DB
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🌋 Server listening on port ${PORT}`);
+  initDB();
 });
