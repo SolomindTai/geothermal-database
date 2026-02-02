@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌋 全球地熱資料庫 - 展會廠商 & 電廠</title>
+  <style>
+    :root {
+      --primary: #5d9a6b;
+      --primary-light: #7ab88a;
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text: #2d3436;
+      --text-muted: #636e72;
+      --border: #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); padding: 2rem; text-align: center; color: #fff; }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    header p { opacity: 0.9; }
+    .author { font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9; }
+    .stats { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .stat { background: rgba(255,255,255,0.2); padding: 0.5rem 1.2rem; border-radius: 20px; }
+    .stat strong { font-size: 1.3rem; }
+    .main-tabs { display: flex; justify-content: center; gap: 1rem; padding: 1rem; background: #fff; border-bottom: 1px solid var(--border); }
+    .main-tab { padding: 0.75rem 2rem; background: var(--bg); border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; color: var(--text); transition: all 0.2s; }
+    .main-tab:hover, .main-tab.active { background: var(--primary); color: #fff; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .search-box { background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+    .search-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; }
+    .search-group { flex: 1; min-width: 140px; }
+    .search-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .search-group input, .search-group select { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; }
+    .search-group input:focus, .search-group select:focus { outline: none; border-color: var(--primary); }
+    .btn { padding: 0.6rem 1.5rem; background: var(--primary); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+    .btn:hover { background: var(--primary-light); }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+    .btn-outline:hover { background: var(--bg); }
+    .results-info { margin-bottom: 1rem; color: var(--text-muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+    .card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .card h3 a { color: var(--text); text-decoration: none; }
+    .card h3 a:hover { color: var(--primary); }
+    .card .meta { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .tag { background: var(--bg); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; color: var(--text-muted); }
+    .tag.category { background: #e8f5e9; color: #2e7d32; }
+    .tag.country { background: #e3f2fd; color: #1565c0; }
+    .tag.capacity { background: #fff3e0; color: #e65100; }
+    .tag.status-operating { background: #e8f5e9; color: #2e7d32; }
+    .tag.status-construction { background: #fff3e0; color: #f57c00; }
+    .tag.status-exploration { background: #fce4ec; color: #c2185b; }
+    .card .description { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .card .events, .card .details { font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: 0.5rem; }
+    .card .details { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; }
+    .card .details span { display: block; }
+    .card .details strong { color: var(--text); }
+    footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+    .loading { text-align: center; padding: 3rem; color: var(--text-muted); }
+    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .stats { flex-direction: column; gap: 0.5rem; } .card .details { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌋 全球地熱資料庫</h1>
+    <p>Global Geothermal Database - Exhibitors & Power Plants</p>
+    <p class="author">由 <strong>台灣先進地熱</strong> 整理提供 (2020-2025)</p>
+    <div class="stats" id="stats">
+      <div class="stat"><strong id="statPlants">-</strong> 電廠</div>
+      <div class="stat"><strong id="statCapacity">-</strong> MW</div>
+      <div class="stat"><strong id="statExhibitors">-</strong> 廠商</div>
+      <div class="stat"><strong id="statEvents">-</strong> 展會</div>
+    </div>
+  </header>
+
+  <div class="main-tabs">
+    <button class="main-tab active" data-section="plants">🏭 地熱電廠</button>
+    <button class="main-tab" data-section="exhibitors">🏢 展會廠商</button>
+  </div>
+
+  <div class="container">
+    <!-- Power Plants Section -->
+    <div id="plants" class="section active">
+      <div class="search-box">
+        <div class="search-row">
+          <div class="search-group" style="flex: 2;">
+            <label>🔍 關鍵字搜尋</label>
+            <input type="text" id="plantQuery" placeholder="電廠名稱、運營商...">
+          </div>
+          <div class="search-group">
+            <label>🌍 國家</label>
+            <select id="plantCountry"><option value="">全部國家</option></select>
+          </div>
+          <div class="search-group">
+            <label>⚡ 發電類型</label>
+            <select id="plantType"><option value="">全部類型</option></select>
+          </div>
+          <div class="search-group">
+            <label>📊 狀態</label>
+            <select id="plantStatus">
+              <option value="">全部狀態</option>
+              <option value="Operating">運轉中</option>
+              <option value="Under Construction">建設中</option>
+              <option value="Exploration">探勘中</option>
+            </select>
+          </div>
+          <div class="search-group">
+            <label>🔋 最小容量 (MW)</label>
+            <input type="number" id="plantMinCapacity" placeholder="0">
+          </div>
+          <button class="btn" onclick="searchPlants()">搜尋</button>
+          <button class="btn btn-outline" onclick="clearPlantFilters()">清除</button>
+        </div>
+      </div>
+      <div class="results-info" id="plantResultsInfo"></div>
+      <div class="grid" id="plantResults"><div class="loading">載入中...</div></div>
+    </div>
+
+    <!-- Exhibitors Section -->
+    <div id="exhibitors" class="section">
+      <div class="search-box">
+        <div class="search-row">
+          <div class="search-group" style="flex: 2;">
+            <label>🔍 關鍵字搜尋</label>
+            <input type="text" id="searchQuery" placeholder="公司名稱、描述...">
+          </div>
+          <div class="search-group">
+            <label>📁 產業類別</label>
+            <select id="filterCategory"><option value="">全部類別</option></select>
+          </div>
+          <div class="search-group">
+            <label>🌍 國家/地區</label>
+            <select id="filterCountry"><option value="">全部國家</option></select>
+          </div>
+          <div class="search-group">
+            <label>📅 年份</label>
+            <select id="filterYear">
+              <option value="">全部年份</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+              <option value="2022">2022</option>
+              <option value="2021">2021</option>
+              <option value="2020">2020</option>
+            </select>
+          </div>
+          <button class="btn" onclick="searchExhibitors()">搜尋</button>
+          <button class="btn btn-outline" onclick="clearFilters()">清除</button>
+        </div>
+      </div>
+      <div class="results-info" id="resultsInfo"></div>
+      <div class="grid" id="results"><div class="loading">載入中...</div></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 <strong>台灣先進地熱</strong> ｜ Taiwan Advanced Geothermal</p>
+    <p>資料來源：IGA, GRC, ThinkGeoEnergy, 各國能源機構, 公司年報</p>
+  </footer>
+
+  <script>
+    const countryFlags = {
+      'USA': '🇺🇸', 'Germany': '🇩🇪', 'Japan': '🇯🇵', 'Italy': '🇮🇹', 'Iceland': '🇮🇸',
+      'Sweden': '🇸🇪', 'France': '🇫🇷', 'UK': '🇬🇧', 'Norway': '🇳🇴', 'Denmark': '🇩🇰',
+      'Canada': '🇨🇦', 'New Zealand': '🇳🇿', 'Indonesia': '🇮🇩', 'Kenya': '🇰🇪',
+      'Taiwan': '🇹🇼', 'China': '🇨🇳', 'Philippines': '🇵🇭', 'Slovakia': '🇸🇰',
+      'Mexico': '🇲🇽', 'Turkey': '🇹🇷', 'El Salvador': '🇸🇻', 'Costa Rica': '🇨🇷',
+      'Ethiopia': '🇪🇹', 'Nicaragua': '🇳🇮', 'Russia': '🇷🇺'
+    };
+
+    // Main tab switching
+    document.querySelectorAll('.main-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.section).classList.add('active');
+      });
+    });
+
+    async function loadFilters() {
+      const [categories, countries, stats, plantTypes, plantCountries] = await Promise.all([
+        fetch('/api/categories').then(r => r.json()),
+        fetch('/api/countries').then(r => r.json()),
+        fetch('/api/stats').then(r => r.json()),
+        fetch('/api/plant-types').then(r => r.json()),
+        fetch('/api/plant-countries').then(r => r.json())
+      ]);
+
+      // Exhibitor filters
+      const catSelect = document.getElementById('filterCategory');
+      categories.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; catSelect.appendChild(opt); });
+
+      const countrySelect = document.getElementById('filterCountry');
+      countries.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = `${countryFlags[c] || '🏳️'} ${c}`; countrySelect.appendChild(opt); });
+
+      // Plant filters
+      const typeSelect = document.getElementById('plantType');
+      plantTypes.forEach(t => { const opt = document.createElement('option'); opt.value = t; opt.textContent = t; typeSelect.appendChild(opt); });
+
+      const plantCountrySelect = document.getElementById('plantCountry');
+      plantCountries.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = `${countryFlags[c] || '🏳️'} ${c}`; plantCountrySelect.appendChild(opt); });
+
+      // Stats
+      document.getElementById('statExhibitors').textContent = stats.exhibitors;
+      document.getElementById('statEvents').textContent = stats.events;
+      document.getElementById('statPlants').textContent = stats.plants;
+      document.getElementById('statCapacity').textContent = stats.totalCapacity?.toLocaleString() || '-';
+    }
+
+    // Power Plants
+    async function searchPlants() {
+      const params = new URLSearchParams();
+      const q = document.getElementById('plantQuery').value;
+      const country = document.getElementById('plantCountry').value;
+      const type = document.getElementById('plantType').value;
+      const status = document.getElementById('plantStatus').value;
+      const minCap = document.getElementById('plantMinCapacity').value;
+
+      if (q) params.set('q', q);
+      if (country) params.set('country', country);
+      if (type) params.set('type', type);
+      if (status) params.set('status', status);
+      if (minCap) params.set('min_capacity', minCap);
+
+      const res = await fetch(`/api/plants?${params}`);
+      const data = await res.json();
+      renderPlants(data);
+    }
+
+    function renderPlants(data) {
+      const container = document.getElementById('plantResults');
+      const info = document.getElementById('plantResultsInfo');
+      const totalCap = data.reduce((sum, p) => sum + (p.capacity_mw || 0), 0);
+      info.textContent = `找到 ${data.length} 座電廠，總裝置容量 ${Math.round(totalCap).toLocaleString()} MW`;
+
+      if (data.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;">無符合條件的電廠</p>';
+        return;
+      }
+
+      container.innerHTML = data.map(p => {
+        const statusClass = p.status === 'Operating' ? 'status-operating' : p.status === 'Under Construction' ? 'status-construction' : 'status-exploration';
+        return `
+        <div class="card">
+          <h3>${countryFlags[p.country] || '🏳️'} ${p.name}</h3>
+          <div class="meta">
+            <span class="tag capacity">⚡ ${p.capacity_mw || '?'} MW</span>
+            <span class="tag ${statusClass}">${p.status}</span>
+            <span class="tag">${p.plant_type || 'Unknown'}</span>
+          </div>
+          <p class="description">${p.description || ''}</p>
+          <div class="details">
+            <span><strong>運營商:</strong> ${p.operator || '-'}</span>
+            <span><strong>開發商:</strong> ${p.developer || '-'}</span>
+            <span><strong>地區:</strong> ${p.region || '-'}</span>
+            <span><strong>併網:</strong> ${p.grid_connection || '-'}</span>
+            <span><strong>儲層溫度:</strong> ${p.reservoir_temp_c ? p.reservoir_temp_c + '°C' : '-'}</span>
+            <span><strong>井深:</strong> ${p.reservoir_depth_m ? p.reservoir_depth_m + 'm' : '-'}</span>
+            <span><strong>井數:</strong> ${p.well_count || '-'}</span>
+            <span><strong>面積:</strong> ${p.area_km2 ? p.area_km2 + ' km²' : '-'}</span>
+            <span><strong>年發電量:</strong> ${p.annual_generation_gwh ? p.annual_generation_gwh + ' GWh' : '-'}</span>
+            <span><strong>容量因數:</strong> ${p.capacity_factor ? (p.capacity_factor * 100).toFixed(0) + '%' : '-'}</span>
+          </div>
+          ${p.notes ? `<div class="events"><strong>備註:</strong> ${p.notes}</div>` : ''}
+        </div>
+      `}).join('');
+    }
+
+    function clearPlantFilters() {
+      document.getElementById('plantQuery').value = '';
+      document.getElementById('plantCountry').value = '';
+      document.getElementById('plantType').value = '';
+      document.getElementById('plantStatus').value = '';
+      document.getElementById('plantMinCapacity').value = '';
+      searchPlants();
+    }
+
+    // Exhibitors
+    async function searchExhibitors() {
+      const params = new URLSearchParams();
+      const q = document.getElementById('searchQuery').value;
+      const category = document.getElementById('filterCategory').value;
+      const country = document.getElementById('filterCountry').value;
+      const year = document.getElementById('filterYear').value;
+
+      if (q) params.set('q', q);
+      if (category) params.set('category', category);
+      if (country) params.set('country', country);
+      if (year) params.set('year', year);
+
+      const res = await fetch(`/api/exhibitors?${params}`);
+      const data = await res.json();
+      renderExhibitors(data);
+    }
+
+    function renderExhibitors(data) {
+      const container = document.getElementById('results');
+      const info = document.getElementById('resultsInfo');
+      info.textContent = `找到 ${data.length} 家廠商`;
+
+      if (data.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;">無符合條件的廠商</p>';
+        return;
+      }
+
+      container.innerHTML = data.map(item => `
+        <div class="card">
+          <h3>${countryFlags[item.country] || '🏳️'} ${item.website ? `<a href="${item.website}" target="_blank">${item.name}</a>` : item.name}</h3>
+          <div class="meta">
+            <span class="tag category">${item.category}</span>
+            ${item.subcategory ? `<span class="tag">${item.subcategory}</span>` : ''}
+            <span class="tag country">${item.country}</span>
+          </div>
+          <p class="description">${item.description || ''}</p>
+          ${item.events_list ? `<div class="events"><strong>參展紀錄：</strong>${item.events_list}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function clearFilters() {
+      document.getElementById('searchQuery').value = '';
+      document.getElementById('filterCategory').value = '';
+      document.getElementById('filterCountry').value = '';
+      document.getElementById('filterYear').value = '';
+      searchExhibitors();
+    }
+
+    // Enter key handlers
+    document.getElementById('searchQuery').addEventListener('keypress', e => { if (e.key === 'Enter') searchExhibitors(); });
+    document.getElementById('plantQuery').addEventListener('keypress', e => { if (e.key === 'Enter') searchPlants(); });
+
+    // Init
+    loadFilters();
+    searchPlants();
+    searchExhibitors();
+  </script>
+</body>
+</html>

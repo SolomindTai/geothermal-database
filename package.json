@@ -1,0 +1,14 @@
+{
+  "name": "geothermal-exhibitors",
+  "version": "1.0.0",
+  "description": "全球地熱研討會展覽會廠商資料庫",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "import": "node scripts/import-data.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sql.js": "^1.10.0"
+  }
+}
