@@ -24,6 +24,19 @@
     .stat { background: rgba(255,255,255,0.2); padding: 0.5rem 1.2rem; border-radius: 20px; }
     .stat strong { font-size: 1.3rem; }
     .main-tabs { display: flex; justify-content: center; gap: 1rem; padding: 1rem; background: #fff; border-bottom: 1px solid var(--border); }
+    .nav-links { margin-top: 1rem; }
+    .nav-link { 
+      display: inline-block; 
+      padding: 0.5rem 1.5rem; 
+      background: rgba(255,255,255,0.9); 
+      color: var(--primary); 
+      text-decoration: none; 
+      border-radius: 20px; 
+      font-weight: 600; 
+      margin: 0 0.5rem;
+      transition: all 0.2s;
+    }
+    .nav-link:hover { background: #fff; transform: scale(1.05); }
     .main-tab { padding: 0.75rem 2rem; background: var(--bg); border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; color: var(--text); transition: all 0.2s; }
     .main-tab:hover, .main-tab.active { background: var(--primary); color: #fff; }
     .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
@@ -69,6 +82,9 @@
     <h1>🌋 全球地熱資料庫</h1>
     <p>Global Geothermal Database - Exhibitors & Power Plants</p>
     <p class="author">由 <strong>台灣先進地熱</strong> 整理提供 (2020-2025)</p>
+    <div class="nav-links">
+      <a href="https://geothermal-news-production.up.railway.app" target="_blank" class="nav-link">📰 地熱新聞與論文</a>
+    </div>
     <div class="stats" id="stats">
       <div class="stat"><strong id="statPlants">-</strong> 電廠</div>
       <div class="stat"><strong id="statCapacity">-</strong> MW</div>
